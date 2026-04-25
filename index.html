@@ -1,391 +1,81 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0f1117">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Расчёт З/П">
-<title>Расчёт З/П</title>
-<link rel="manifest" id="manifest-link">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0f1117;
-    --surface: #181c26;
-    --card: #1e2333;
-    --border: #2a3050;
-    --accent: #4f8ef7;
-    --accent2: #38d9a9;
-    --text: #e8ecf4;
-    --muted: #7b88a8;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Golos Text', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px 16px 60px;
-    background-image:
-      radial-gradient(ellipse 80% 40% at 50% -10%, rgba(79,142,247,0.13) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 30% at 90% 80%, rgba(56,217,169,0.07) 0%, transparent 60%);
-  }
-
-  header {
-    text-align: center;
-    margin-bottom: 40px;
-  }
-
-  header h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(2.8rem, 8vw, 5rem);
-    letter-spacing: 0.08em;
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-
-  header p {
-    color: var(--muted);
-    font-size: 0.95rem;
-    letter-spacing: 0.04em;
-  }
-
-  .container {
-    width: 100%;
-    max-width: 560px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 28px 28px 24px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    opacity: 0.7;
-  }
-
-  .section-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 18px;
-  }
-
-  .role-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .role-btn {
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 13px 10px;
-    cursor: pointer;
-    transition: all 0.18s ease;
-    text-align: left;
-    color: var(--text);
-    font-family: 'Golos Text', sans-serif;
-  }
-
-  .role-btn:hover { border-color: var(--accent); background: rgba(79,142,247,0.07); }
-
-  .role-btn.active {
-    border-color: var(--accent);
-    background: rgba(79,142,247,0.13);
-    box-shadow: 0 0 0 1px var(--accent) inset;
-  }
-
-  .role-btn .role-name {
-    font-size: 0.92rem;
-    font-weight: 600;
-    display: block;
-    margin-bottom: 4px;
-  }
-
-  .role-btn .role-meta { font-size: 0.75rem; color: var(--muted); }
-  .role-btn.active .role-name { color: var(--accent); }
-
-  .fields { display: flex; flex-direction: column; gap: 18px; }
-
-  .field { display: flex; flex-direction: column; gap: 7px; }
-
-  .field label {
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  input[type="number"] {
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 11px 14px;
-    color: var(--text);
-    font-family: 'Golos Text', sans-serif;
-    font-size: 1rem;
-    font-weight: 600;
-    outline: none;
-    transition: border-color 0.15s;
-    width: 100%;
-    text-align: center;
-  }
-
-  input[type="number"]:focus { border-color: var(--accent); }
-
-  input[type="number"]::placeholder { color: var(--muted); font-weight: 400; }
-
-  .result-card {
-    background: linear-gradient(135deg, rgba(79,142,247,0.12) 0%, rgba(56,217,169,0.08) 100%);
-    border: 1.5px solid rgba(79,142,247,0.35);
-    border-radius: 18px;
-    padding: 32px 28px;
-    text-align: center;
-  }
-
-  .result-label {
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 14px;
-  }
-
-  .result-amount {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(3rem, 12vw, 5.5rem);
-    letter-spacing: 0.05em;
-    background: linear-gradient(135deg, #fff 30%, var(--accent2) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1;
-    transition: all 0.3s ease;
-  }
-
-  .result-currency {
-    font-size: 1rem;
-    color: var(--muted);
-    margin-top: 6px;
-    font-weight: 500;
-  }
-
-  .formula-breakdown {
-    margin-top: 22px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 12px;
-    padding: 14px 16px;
-    font-size: 0.82rem;
-    color: var(--muted);
-    line-height: 1.8;
-    text-align: left;
-    font-weight: 500;
-  }
-
-  .formula-breakdown span { color: var(--text); font-weight: 600; }
-  .formula-highlight { color: var(--accent2) !important; font-size: 0.95rem; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4facfe" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#16213e" media="(prefers-color-scheme: dark)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Расчёт З/П</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <!-- Иконка для iOS (Base64 SVG) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjNGZhY2ZlIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDBmMmZlIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIGZpbGw9InVybCgjZykiIHJ4PSI4MCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBkeT0iLjM1ZW0iIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjMwMCIgZm9udC13ZWlnaHQ9ImJvbGQiPuKCsjwvdGV4dD48L3N2Zz4=">
 </head>
 <body>
+    <header>
+        <h1>Расчёт З/П</h1>
+        <button id="theme-toggle" aria-label="Переключить тему">🌙</button>
+    </header>
 
-<header>
-  <h1>Расчёт З/П</h1>
-  <p>Оклад × КТУ ÷ 165 ч × часы по факту</p>
-</header>
+    <main>
+        <section class="card fade-in">
+            <label for="role-select">1. Выберите должность</label>
+            <select id="role-select"></select>
+        </section>
 
-<div class="container">
+        <section class="card fade-in delay-1">
+            <label>2. Параметры расчёта</label>
+            <div class="inputs">
+                <div class="input-group">
+                    <label for="ktu-input">КТУ за месяц</label>
+                    <input type="number" id="ktu-input" inputmode="decimal" step="any" placeholder="1.0">
+                </div>
+                <div class="input-group">
+                    <label for="hours-input">Часов отработано</label>
+                    <input type="number" id="hours-input" inputmode="decimal" step="any" placeholder="165">
+                </div>
+            </div>
+        </section>
 
-  <div class="card">
-    <div class="section-label">1. Выберите должность</div>
-    <div class="role-grid" id="roleGrid"></div>
-  </div>
+        <section id="result-container" class="result-box fade-in delay-2">
+            <div class="result-label">Итоговая заработная плата</div>
+            <div id="result-value" class="result-value">—</div>
+            <div class="result-currency">российских рублей</div>
+        </section>
 
-  <div class="card" id="inputCard" style="display:none">
-    <div class="section-label">2. Параметры расчёта</div>
-    <div class="fields">
-      <div class="field">
-        <label>КТУ за месяц</label>
-        <input type="number" id="ktuInput" step="0.01" min="0" max="10" placeholder="например, 2.55">
-      </div>
-      <div class="field">
-        <label>Часов отработано</label>
-        <input type="number" id="hoursInput" min="1" max="300" step="1" placeholder="например, 165">
-      </div>
+        <div class="actions fade-in delay-3">
+            <button id="save-btn" class="btn primary">💾 Сохранить расчёт</button>
+            <button id="history-btn" class="btn secondary">📜 История</button>
+            <button id="clear-btn" class="btn tertiary">🗑 Очистить</button>
+        </div>
+    </main>
+
+    <!-- Умный баннер установки -->
+    <div id="install-banner" class="banner hidden">
+        <span id="install-text"></span>
+        <button id="install-action" class="btn small"></button>
+        <button id="install-dismiss" class="btn small dismiss" aria-label="Закрыть">✕</button>
     </div>
-  </div>
 
-  <div class="result-card" id="resultCard" style="display:none">
-    <div class="result-label">Итоговая заработная плата</div>
-    <div class="result-amount" id="resultAmount">—</div>
-    <div class="result-currency">российских рублей</div>
-    <div class="formula-breakdown" id="formulaBreakdown">Введите КТУ и количество часов</div>
-  </div>
+    <!-- Модальное окно истории -->
+    <dialog id="history-dialog">
+        <div class="dialog-header">
+            <h2>История расчётов</h2>
+            <button id="close-dialog" class="btn icon-btn" aria-label="Закрыть">✕</button>
+        </div>
+        <div id="history-list" class="history-list"></div>
+        <div class="dialog-actions">
+            <button id="clear-history-btn" class="btn danger">🗑 Очистить историю</button>
+        </div>
+    </dialog>
 
-</div>
-
-<script>
-// =============================================================
-// СПИСОК ДОЛЖНОСТЕЙ
-// Чтобы добавить новую должность — скопируйте одну строку
-// и замените id, name и oklad на нужные значения.
-// id должен быть уникальным (без пробелов, на латинице).
-// =============================================================
-const roles = [
-  { id: 'raznorab',   name: 'Разнорабочий',      oklad: 33850 },
-  { id: 'pressovsh',  name: 'Прессовщик',         oklad: 33850 },
-  { id: 'upakovsh',   name: 'Упаковщик',          oklad: 33850 },
-  { id: 'dispetcher', name: 'Диспетчер',          oklad: 34500 },
-  { id: 'nach_smen',  name: 'Начальник смены',    oklad: 37500 },
-  { id: 'voditel',    name: 'Водители',           oklad: 34500 },
-  { id: 'melnik',     name: 'Мельник',            oklad: 33850 },
-  { id: 'avtoklav',   name: 'Автоклавщик',       oklad: 33850 },
-  // { id: 'new_role', name: 'Новая должность', oklad: 35000 },
-];
-// =============================================================
-
-const STORAGE_KEY = 'salary_calc_role';
-
-let selectedRole = null;
-
-function fmt(n) { return Math.round(n).toLocaleString('ru-RU'); }
-
-const roleGrid = document.getElementById('roleGrid');
-roles.forEach(r => {
-  const btn = document.createElement('button');
-  btn.className = 'role-btn';
-  btn.innerHTML = `<span class="role-name">${r.name}</span><span class="role-meta">Оклад: ${fmt(r.oklad)} ₽</span>`;
-  btn.addEventListener('click', () => selectRole(r));
-  btn.dataset.id = r.id;
-  roleGrid.appendChild(btn);
-});
-
-function selectRole(r) {
-  selectedRole = r;
-  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector(`[data-id="${r.id}"]`).classList.add('active');
-  document.getElementById('inputCard').style.display = '';
-  document.getElementById('resultCard').style.display = '';
-  localStorage.setItem(STORAGE_KEY, r.id);
-  recalc();
-}
-
-function recalc() {
-  if (!selectedRole) return;
-  const hours = parseFloat(document.getElementById('hoursInput').value);
-  const ktu = parseFloat(document.getElementById('ktuInput').value);
-
-  if (!ktu || !hours) {
-    document.getElementById('resultAmount').textContent = '—';
-    document.getElementById('formulaBreakdown').innerHTML = 'Введите КТУ и количество часов';
-    return;
-  }
-
-  const salary = selectedRole.oklad * ktu / 165 * hours;
-  document.getElementById('resultAmount').textContent = fmt(salary);
-  document.getElementById('formulaBreakdown').innerHTML =
-    `<span>${fmt(selectedRole.oklad)} ₽</span> × КТУ <span>${ktu.toFixed(2)}</span><br>` +
-    `÷ <span>165 ч</span> × <span>${hours} ч</span><br>` +
-    `= <span class="formula-highlight">${fmt(salary)} ₽</span>`;
-}
-
-document.getElementById('ktuInput').addEventListener('input', recalc);
-document.getElementById('hoursInput').addEventListener('input', recalc);
-
-// Восстановить выбранную должность после перезагрузки
-const savedId = localStorage.getItem(STORAGE_KEY);
-if (savedId) {
-  const saved = roles.find(r => r.id === savedId);
-  if (saved) selectRole(saved);
-}
-
-// PWA: манифест
-const manifest = {
-  name: 'Расчёт З/П',
-  short_name: 'Расчёт З/П',
-  description: 'Калькулятор заработной платы с КТУ',
-  start_url: './',
-  display: 'standalone',
-  background_color: '#0f1117',
-  theme_color: '#4f8ef7',
-  icons: [
-    {
-      src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%230f1117'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='110' font-family='serif'%3E₽%3C/text%3E%3C/svg%3E",
-      sizes: '192x192',
-      type: 'image/svg+xml'
-    },
-    {
-      src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%230f1117'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='300' font-family='serif'%3E₽%3C/text%3E%3C/svg%3E",
-      sizes: '512x512',
-      type: 'image/svg+xml'
-    }
-  ]
-};
-
-const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-const manifestUrl = URL.createObjectURL(manifestBlob);
-document.getElementById('manifest-link').setAttribute('href', manifestUrl);
-
-// PWA: service worker (кэширование для работы офлайн)
-if ('serviceWorker' in navigator) {
-  const swCode = `
-    const CACHE = 'salary-calc-v1';
-    const URLS = [self.location.href.replace(/\\/[^/]*$/, '/') || '/'];
-
-    self.addEventListener('install', e => {
-      e.waitUntil(caches.open(CACHE).then(c => c.addAll(URLS)).catch(() => {}));
-      self.skipWaiting();
-    });
-
-    self.addEventListener('activate', e => {
-      e.waitUntil(clients.claim());
-    });
-
-    self.addEventListener('fetch', e => {
-      if (e.request.method !== 'GET') return;
-      e.respondWith(
-        fetch(e.request)
-          .then(r => {
-            const clone = r.clone();
-            caches.open(CACHE).then(c => c.put(e.request, clone));
-            return r;
-          })
-          .catch(() => caches.match(e.request))
-      );
-    });
-  `;
-  const swBlob = new Blob([swCode], { type: 'application/javascript' });
-  const swUrl = URL.createObjectURL(swBlob);
-  navigator.serviceWorker.register(swUrl, { scope: './' }).catch(() => {});
-}
-</script>
+    <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+        }
+    </script>
 </body>
 </html>
