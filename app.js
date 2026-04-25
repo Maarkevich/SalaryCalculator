@@ -46,7 +46,7 @@ function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   state.theme = theme;
   localStorage.setItem('zp_theme', theme);
-  els.themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+  els.themeToggle.textContent = theme === 'dark' ? '️' : '🌙';
   document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#16213e' : '#4facfe';
 }
 
@@ -54,7 +54,6 @@ els.themeToggle.addEventListener('click', () => {
   applyTheme(state.theme === 'dark' ? 'light' : 'dark');
 });
 
-// Автоопределение системной темы
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
   if (!localStorage.getItem('zp_theme')) applyTheme(e.matches ? 'dark' : 'light');
 });
@@ -69,7 +68,6 @@ function initRoles() {
   updateResult();
 }
 
-// Обработка смены должности
 els.roleSelect.addEventListener('change', () => {
   els.ktuInput.value = '';
   els.hoursInput.value = '';
@@ -84,45 +82,37 @@ function updateResult() {
   const kRaw = els.ktuInput.value.trim();
   const hRaw = els.hoursInput.value.trim();
 
-  // Пустые поля → показываем оклад
   if (kRaw === '' || hRaw === '') {
     els.resultValue.textContent = role.oklad.toLocaleString('ru-RU');
-    els.resultContainer.classList.remove('pulse');
+    els.resultValue.style.background = '';
+    els.resultValue.style.webkitBackgroundClip = '';
     return;
   }
 
   let k = parseFloat(kRaw);
   let h = parseFloat(hRaw);
 
-  // Отрицательные значения → 0
   if (isNaN(k) || k < 0) k = 0;
   if (isNaN(h) || h < 0) h = 0;
 
-  // Если 0 → сообщение
   if (k === 0 || h === 0) {
     els.resultValue.textContent = 'иди работай, поднимай КТУ';
     els.resultValue.style.background = 'var(--danger)';
     els.resultValue.style.webkitBackgroundClip = 'text';
-    els.resultContainer.classList.add('pulse');
     return;
   }
 
-  // Сброс стиля текста при валидных данных
   els.resultValue.style.background = '';
   els.resultValue.style.webkitBackgroundClip = '';
-  els.resultContainer.classList.remove('pulse');
 
-  // Формула: (Оклад × КТУ ÷ 165) × Часы
   const salary = (role.oklad * k / 165) * h;
-  // Без округлений, заменяем точку на запятую для рус. формата
-  els.resultValue.textContent = String(salary).replace('.', ',');
+  // Без копеек - только целые рубли
+  els.resultValue.textContent = Math.floor(salary).toLocaleString('ru-RU');
 }
 
-// Слушатели ввода
 els.ktuInput.addEventListener('input', updateResult);
 els.hoursInput.addEventListener('input', updateResult);
 
-// Очистка полей
 els.clearBtn.addEventListener('click', () => {
   els.ktuInput.value = '';
   els.hoursInput.value = '';
@@ -152,7 +142,7 @@ els.saveBtn.addEventListener('click', () => {
     return;
   }
 
-  const salary = (role.oklad * kVal / 165) * hVal;
+  const salary = Math.floor((role.oklad * kVal / 165) * hVal);
 
   const entry = {
     date: getMonthYear(),
@@ -161,15 +151,13 @@ els.saveBtn.addEventListener('click', () => {
     salary: salary
   };
 
-  state.history.unshift(entry); // Добавляем в начало
+  state.history.unshift(entry);
   localStorage.setItem('zp_history', JSON.stringify(state.history));
   
-  // Визуальный фидбек
   els.saveBtn.textContent = '✅ Сохранено!';
   setTimeout(() => els.saveBtn.textContent = '💾 Сохранить расчёт', 1500);
 });
 
-// Открытие истории
 els.historyBtn.addEventListener('click', () => {
   renderHistory();
   els.historyDialog.showModal();
@@ -191,12 +179,11 @@ function renderHistory() {
       <span class="date">${item.date}</span>
       <span>${item.hours} ч</span>
       <span>${item.ktu}</span>
-      <span style="font-weight:600;color:var(--primary)">${String(item.salary).replace('.','/')} ₽</span>
+      <span style="font-weight:600;color:var(--primary)">${item.salary.toLocaleString('ru-RU')} ₽</span>
       <button class="btn small dismiss delete-btn" data-idx="${idx}">✕</button>
     </div>
   `).join('');
 
-  // Привязка удаления
   document.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       if (!confirm('Удалить эту запись?')) return;
@@ -227,7 +214,6 @@ function hideInstallBanner() {
   localStorage.setItem('zp_install_dismissed', 'true');
 }
 
-// Android: ловим событие beforeinstallprompt
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   state.installPrompt = e;
@@ -241,7 +227,6 @@ window.addEventListener('beforeinstallprompt', e => {
   showInstallBanner();
 });
 
-// iOS: детектим Safari и показываем инструкцию
 if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
   if (!navigator.standalone) {
     els.installText.textContent = '🍏 Нажмите «Поделиться» → «На экран «Домой»';
@@ -254,7 +239,6 @@ if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
   }
 }
 
-// Уже установлено (для всех платформ после первого закрытия)
 if (navigator.standalone || localStorage.getItem('zp_installed')) {
   hideInstallBanner();
 }
