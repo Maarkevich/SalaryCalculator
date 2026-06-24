@@ -59,7 +59,7 @@ header {
 h1 { font-size: 1.6rem; font-weight: 800; }
 #theme-toggle {
   background: none; border: none; font-size: 1.6rem; cursor: pointer; padding: 8px;
-  border-radius: 50%; transition: transform 0.2s; color: var(--text); /* Явный цвет для iOS */
+  border-radius: 50%; transition: transform 0.2s; color: var(--text);
 }
 #theme-toggle:hover { transform: scale(1.1); }
 
@@ -74,16 +74,50 @@ h1 { font-size: 1.6rem; font-weight: 800; }
   -webkit-backdrop-filter: blur(16px);
 }
 label { display: block; margin-bottom: 10px; font-weight: 600; font-size: 0.95rem; color: var(--text-muted); }
-select, input {
-  width: 100%; padding: 14px 16px; border: 1px solid var(--card-border);
-  border-radius: 12px; background: rgba(255,255,255,0.2); font-size: 1rem;
-  color: var(--text); outline: none; transition: border 0.2s, box-shadow 0.2s;
+
+.select-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+select {
+  flex: 1;
+  padding: 14px 16px;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.2);
+  font-size: 1rem;
+  color: var(--text);
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
   backdrop-filter: blur(8px);
 }
-[data-theme="dark"] select, [data-theme="dark"] input { background: rgba(0,0,0,0.3); }
+[data-theme="dark"] select { background: rgba(0,0,0,0.3); }
+
+input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.2);
+  font-size: 1rem;
+  color: var(--text);
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+  backdrop-filter: blur(8px);
+}
+[data-theme="dark"] input { background: rgba(0,0,0,0.3); }
+
 select:focus, input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,172,254,0.2); }
 
 .inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px; }
+
+.compact-input {
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  border-radius: 10px;
+}
 
 .result-box {
   background: var(--card-bg);
@@ -151,7 +185,49 @@ dialog {
 }
 dialog::backdrop { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
 .dialog-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); }
-.history-list { padding: 10px 20px; overflow-y: auto; max-height: 50vh; }
+
+/* Стили для списка должностей */
+.roles-list {
+  padding: 10px 20px;
+  overflow-y: auto;
+  max-height: 45vh;
+}
+.role-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--card-border);
+  font-size: 0.95rem;
+}
+.role-item:last-child { border-bottom: none; }
+.role-info { flex: 1; }
+.role-actions { display: flex; gap: 6px; }
+.role-actions .btn { padding: 6px 10px; font-size: 1rem; }
+
+/* Секция добавления должности */
+.dialog-add-role {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: 8px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--card-border);
+  align-items: center;
+}
+.dialog-add-role input {
+  padding: 10px 12px;
+  font-size: 0.9rem;
+}
+.dialog-add-role .btn {
+  padding: 10px 14px;
+  white-space: nowrap;
+}
+
+.history-list {
+  padding: 10px 20px;
+  overflow-y: auto;
+  max-height: 50vh;
+}
 .history-item {
   display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 10px; padding: 14px 0;
   border-bottom: 1px solid var(--card-border); align-items: center; font-size: 0.95rem;
@@ -159,6 +235,8 @@ dialog::backdrop { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
 .history-item:last-child { border: none; }
 .history-item .date { font-weight: 600; color: var(--primary); }
 .dialog-actions { padding: 18px 20px; border-top: 1px solid var(--card-border); text-align: center; }
+
+.hidden { display: none; }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { transform: translateX(-50%) translateY(20px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
@@ -185,4 +263,13 @@ dialog::backdrop { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
   body { padding: env(safe-area-inset-top) 12px env(safe-area-inset-bottom); }
   .result-value { font-size: 2.8rem; }
   .inputs { grid-template-columns: 1fr; }
+  .dialog-add-role {
+    grid-template-columns: 1fr 1fr;
+  }
+  .dialog-add-role .btn {
+    grid-column: span 1;
+  }
+  #cancel-edit-btn {
+    grid-column: span 2;
+  }
 }

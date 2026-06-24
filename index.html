@@ -11,7 +11,7 @@
     <title>Расчёт З/П</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%234facfe'/%3E%3Cstop offset='100%25' stop-color='%2300f2fe'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' fill='url(%23g)' rx='80'/%3E%3Ctext x='50%25' y='55%25' dy='.35em' text-anchor='middle' fill='white' font-family='system-ui' font-size='300' font-weight='bold'%3E₽%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
     <div class="app-container">
@@ -23,7 +23,10 @@
         <main>
             <section class="card fade-in">
                 <label for="role-select">1. Выберите должность</label>
-                <select id="role-select"></select>
+                <div class="select-row">
+                    <select id="role-select"></select>
+                    <button id="manage-roles-btn" class="btn icon-btn" title="Управление должностями">⚙️</button>
+                </div>
             </section>
 
             <section class="card fade-in delay-1">
@@ -54,12 +57,14 @@
         </main>
     </div>
 
+    <!-- Баннер установки -->
     <div id="install-banner" class="banner hidden">
         <span id="install-text"></span>
         <button id="install-action" class="btn small"></button>
         <button id="install-dismiss" class="btn small dismiss" aria-label="Закрыть">✕</button>
     </div>
 
+    <!-- Диалог истории -->
     <dialog id="history-dialog">
         <div class="dialog-header">
             <h2>История расчётов</h2>
@@ -68,6 +73,21 @@
         <div id="history-list" class="history-list"></div>
         <div class="dialog-actions">
             <button id="clear-history-btn" class="btn danger">🗑 Очистить историю</button>
+        </div>
+    </dialog>
+
+    <!-- Диалог управления должностями -->
+    <dialog id="roles-dialog">
+        <div class="dialog-header">
+            <h2>Управление должностями</h2>
+            <button id="close-roles-dialog" class="btn icon-btn" aria-label="Закрыть">✕</button>
+        </div>
+        <div id="roles-list" class="roles-list"></div>
+        <div class="dialog-add-role">
+            <input type="text" id="new-role-name" placeholder="Название должности" class="compact-input">
+            <input type="number" id="new-role-oklad" placeholder="Оклад" class="compact-input" inputmode="numeric" step="any">
+            <button id="add-role-btn" class="btn primary small">Добавить</button>
+            <button id="cancel-edit-btn" class="btn secondary small hidden">Отмена</button>
         </div>
     </dialog>
 

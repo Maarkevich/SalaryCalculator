@@ -1,10 +1,13 @@
-const CACHE_NAME = 'zp-calc-v1';
+const CACHE_NAME = 'zp-calc-v3';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './app.js',
-  './manifest.json'
+  './manifest.json',
+  './Icon-192.png',
+  './Icon-512.png',
+  './apple-touch-icon.png'
 ];
 
 self.addEventListener('install', event => {
@@ -26,13 +29,23 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(cached => {
-      return cached || fetch(event.request).then(networkResponse => {
+      if (cached) {
+        return cached;
+      }
+      return fetch(event.request).then(networkResponse => {
         if (event.request.method === 'GET' && networkResponse.ok) {
           const clone = networkResponse.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
         return networkResponse;
+      }).catch(() => {
+        // Для навигационных запросов (открытие страницы) отдаём index.html
+        if (event.request.mode === 'navigate') {
+          return caches.match('./index.html');
+        }
+        // Для остальных ресурсов — просто ошибка
+        throw new Error('Network unavailable');
       });
-    }).catch(() => caches.match('./index.html'))
+    })
   );
 });
